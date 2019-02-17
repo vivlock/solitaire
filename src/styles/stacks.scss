@@ -1,0 +1,33 @@
+.tableau, .foundation, .deck {
+  border-radius: 8px;
+  margin: 8px;
+  height: 135px;
+  width: 95px;
+}
+.foundation, .deck {
+  border: 1px solid gray;
+}
+
+.tableau {
+  &.tableau-empty {
+    background-color: lightgray;
+    border: 1px solid gray;
+  }
+  &.tableau-horizontal {
+    // stack up the cards next to each other
+    // needs more space to the right
+    margin: 8px 60px 8px 12px;
+    position: relative;
+    .card {
+      position: absolute;
+    }
+  }
+  &.tableau-vertical {
+    // top to bottom, klondike style
+  }
+}
+
+.foundation-empty {
+  border: 1px solid navy;
+  background-color: lightblue;
+}

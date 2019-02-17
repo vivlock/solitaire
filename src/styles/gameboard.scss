@@ -1,0 +1,24 @@
+.gameboard {
+  display: flex;
+  .tableau-container {
+    display: inline-block;
+    flex: 1
+  }
+  .foundation-container {
+    display: inline-block;
+  }
+  .tableau-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: left;
+  }
+  .foundation-row {
+    display: flex;
+  }
+  .foundation-col {
+    display: flex;
+    flex-direction: column;
+    width: 112px;
+  }
+}
