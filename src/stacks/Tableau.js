@@ -10,16 +10,18 @@ class Tableau extends Component {
       (this.props.display ? this.props.display : 'vertical') +
       (empty ? " tableau-empty" : "");
 
-      const posType = (this.props.display === 'horizontal') ? 'left' : 'top';
-      const offset = (this.props.display === 'horizontal') ? 20 : 30;
+    const posType = (this.props.display === 'horizontal') ? 'left' : 'top';
+    const offset = (this.props.display === 'horizontal') ? 20 : 30;
 
-       // TODO: faceup should be set on the card by the controller, not hard coded
+    const draggable = this.props.draggable;
+
+     // TODO: faceup should be set on the card by the controller, not hard coded
 
     return (
       <div className={className}>
       {
         cards.map((card, index) => (
-          <Card key={card.id} faceup={ true }
+          <Card key={ card.id } faceup={ true } draggable={ draggable }
             style={{ [posType]: `${offset * index}px` }}
             {...card} />
         ))

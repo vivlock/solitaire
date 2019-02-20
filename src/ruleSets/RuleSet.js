@@ -18,7 +18,7 @@ export default class RuleSet extends Component {
   //   --be sure to set up unique card ids if overriding
   createCards () {
     let cards = [];
-    CardLogic.ranks.forEach(function (rank) {
+    Object.keys(CardLogic.ranks).forEach(function (rank) {
       for(let suit in CardLogic.suits) {
         cards.push({ suit: CardLogic.suits[suit], rank: rank, id: `card-${rank}-${suit}` });
       }

@@ -1,35 +1,27 @@
 const CardLogic = {
-  ranks: [
-    "A", "2", "3", "4", "5", "6", "7",
-    "8", "9", "10", "J", "Q", "K"
-  ],
-  suits:{
-    CLUBS:    "♣️",
-    DIAMONDS: "♦️",
-    HEARTS:   "♥️",
-    SPADES:   "♠️"
+  ranks: {
+    'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
+    '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13
+  },
+  suits: {
+    CLUBS: 'clubs',
+    DIAMONDS: 'diamonds',
+    HEARTS: 'hearts',
+    SPADES: 'spades'
   },
   isOneGreater: function (card, comparedTo) {
-    const cardVal = this.ranks.indexOf(card.rank);
-    const compVal = this.ranks.indexOf(comparedTo.rank);
+    const cardVal = this.ranks[card.rank];
+    const compVal = this.ranks[comparedTo.rank];
     if(cardVal === -1 || compVal === -1) {
       throw new Error(`Invalid card rank: CardLogic.isOneGreater({rank: '${card.rank}'}, {rank: '${comparedTo.rank}'})`);
     }
     return (compVal + 1 === cardVal);
   },
-  getSuitName: function (suit) {
-    switch(suit) {
-      case this.suits.CLUBS:
-        return 'clubs';
-      case this.suits.DIAMONDS:
-        return 'diamonds';
-      case this.suits.HEARTS:
-        return 'hearts';
-      case this.suits.SPADES:
-        return 'spades';
-      default:
-        return "";
+  getRankValue: function (rank) {
+    if(this.ranks.hasOwnProperty(rank)) {
+      return this.ranks[rank]
     }
+    throw new Error(`Invalid card value: CardLogic.getRankValue(rank: '${rank}')`);
   },
   // Durstenfeld shuffle in place
   shuffle: function (cards) {

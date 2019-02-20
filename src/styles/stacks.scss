@@ -3,27 +3,28 @@
   margin: 8px;
   height: 135px;
   width: 95px;
+  position: relative;
 }
 .foundation, .deck {
   border: 1px solid gray;
 }
 
 .tableau {
+  .card {
+    position: absolute; // these will get their position calculated from tableau
+  }
   &.tableau-empty {
     background-color: lightgray;
     border: 1px solid gray;
   }
   &.tableau-horizontal {
-    // stack up the cards next to each other
     // needs more space to the right
-    margin: 8px 60px 8px 12px;
-    position: relative;
-    .card {
-      position: absolute;
-    }
+    margin: 8px 80px 8px 12px;
+
   }
   &.tableau-vertical {
     // top to bottom, klondike style
+    // needs all available vertical space for stacking
   }
 }
 

@@ -1,17 +1,14 @@
 .gameboard {
   display: flex;
   .tableau-container {
-    display: inline-block;
-    flex: 1
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
   }
   .foundation-container {
     display: inline-block;
-  }
-  .tableau-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: left;
   }
   .foundation-row {
     display: flex;
@@ -20,5 +17,7 @@
     display: flex;
     flex-direction: column;
     width: 112px;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 }

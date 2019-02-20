@@ -14,7 +14,8 @@ export default class LaBelleLucie extends RuleSet {
     super (props)
     this.tableauCount = 18;
     this.foundationCount = 4;
-    this.defaultTableauProps = { display: 'horizontal' };
+    this.defaultTableauProps = { display: 'horizontal', draggable: true };
+    this.defaultFoundationProps = { draggable: false }
     this.defaultDeckProps = { redeals: 2, stock: false, stockDraw: false };
     this.state = {
       deck: this.createDeck(),
@@ -110,12 +111,6 @@ export default class LaBelleLucie extends RuleSet {
 
   render () {
     const { tableaus, foundations, deck } = this.state;
-    const tableau_rows = [
-      tableaus.slice(0, 5),
-      tableaus.slice(5, 10),
-      tableaus.slice(10, 15),
-      tableaus.slice(15)
-    ];
     return (
       <div className='gameboard'>
         <Deck {...deck.props} stack={ deck.stack } />
@@ -130,14 +125,8 @@ export default class LaBelleLucie extends RuleSet {
         </div>
         <div className='tableau-container'>
           {
-            tableau_rows.map((row, index) => (
-              <div className='tableau-row' key={ `tblrow-${index}` }>
-                {
-                  row.map((t) => (
-                    <Tableau key={ t.id } stack={ t.stack } { ...t.props } />
-                  ))
-                }
-              </div>
+            tableaus.map((t) => (
+              <Tableau key={ t.id } stack={ t.stack } { ...t.props } />
             ))
           }
         </div>
