@@ -14,9 +14,9 @@ export default class LaBelleLucie extends RuleSet {
     super (props)
     this.tableauCount = 18;
     this.foundationCount = 4;
-    this.defaultTableauProps = { display: 'horizontal', draggable: true };
+    this.defaultTableauProps = { display: 'horizontal', draggable: true, unicodeMode: props.prefs.unicodeMode };
     this.defaultFoundationProps = { draggable: false }
-    this.defaultDeckProps = { redeals: 2, stock: false, stockDraw: false };
+    this.defaultDeckProps = { redeals: 2, stock: false, stockDraw: false, unicodeMode: props.prefs.unicodeMode };
     this.state = {
       deck: this.createDeck(),
       tableaus: this.createTableaus(),
@@ -46,10 +46,21 @@ export default class LaBelleLucie extends RuleSet {
       card = deck.stack.pop();
       i++;
     }
+    tableaus = this.makeTopCardsDraggable(tableaus)
     this.setState({
       deck: deck,
       tableaus: tableaus
     })
+  }
+
+  makeTopCardsDraggable (tableaus) {
+    for(let t of tableaus) {
+      // reset draggable on all cards
+      t.stack.updateAllCards('draggable', false);
+      // set draggable only on top
+      t.stack.peek()['draggable'] = true;
+    }
+    return tableaus;
   }
 
   handleMoveCard (card, fromStack, toStack) {
@@ -111,8 +122,9 @@ export default class LaBelleLucie extends RuleSet {
 
   render () {
     const { tableaus, foundations, deck } = this.state;
+    const unicodeMode = this.props.prefs.unicodeMode;
     return (
-      <div className='gameboard'>
+      <div className={`gameboard ${unicodeMode ? 'unicode-mode' : ''}`}>
         <Deck {...deck.props} stack={ deck.stack } />
         <div className='foundation-container'>
           <div className='foundation-col'>

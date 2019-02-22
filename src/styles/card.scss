@@ -1,11 +1,19 @@
 .card {
+  background-color: white;
+  cursor: default;
+  overflow: hidden;
+  &.draggable {
+    cursor: pointer;
+  }
+
+  /* overwritten by unicode-mode below */
   border: 2px solid black;
   border-radius: 8px;
   padding: 6px;
   height: 120px;
   width: 80px;
-  background-color: white;
-  cursor: pointer;
+  /*****/
+
   &.card-back {
     --c : rgba(255,255,255,0.7);
     --t : transparent;
@@ -44,6 +52,21 @@
       .pip {
 
       }
+    }
+  }
+}
+
+.unicode-mode {
+  .card {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    height: 121px;
+    width: 91px;
+    font-size: 150px;
+    .card-symbol {
+      margin: -45px 0 0 -7px;
+      padding: 0;
     }
   }
 }

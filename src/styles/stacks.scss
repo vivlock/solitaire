@@ -18,9 +18,7 @@
     border: 1px solid gray;
   }
   &.tableau-horizontal {
-    // needs more space to the right
     margin: 8px 80px 8px 12px;
-
   }
   &.tableau-vertical {
     // top to bottom, klondike style
@@ -31,4 +29,16 @@
 .foundation-empty {
   border: 1px solid navy;
   background-color: lightblue;
+}
+
+.unicode-mode {
+  .tableau, .foundation, .deck {
+    height: 119px;
+    width: 88px;
+    border-radius: 2px;
+    border-width:2px;
+  }
+  .tableau-horizontal {
+    margin: 8px 74px 8px 12px;
+  }
 }

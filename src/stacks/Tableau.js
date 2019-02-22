@@ -11,18 +11,21 @@ class Tableau extends Component {
       (empty ? " tableau-empty" : "");
 
     const posType = (this.props.display === 'horizontal') ? 'left' : 'top';
-    const offset = (this.props.display === 'horizontal') ? 20 : 30;
-
-    const draggable = this.props.draggable;
-
-     // TODO: faceup should be set on the card by the controller, not hard coded
-
+    let offset;
+    if(this.props.unicodeMode) {
+      offset = (this.props.display === 'horizontal' ? 16 : 26);
+    }
+    else {
+      offset = (this.props.display === 'horizontal') ? 20 : 30;
+    }
+    const { draggable, unicodeMode } = this.props;
+    // TODO: faceup should be set on the card by the controller, not hard coded
     return (
       <div className={className}>
       {
         cards.map((card, index) => (
           <Card key={ card.id } faceup={ true } draggable={ draggable }
-            style={{ [posType]: `${offset * index}px` }}
+            style={{ [posType]: `${offset * index}px` }} unicodeMode={ unicodeMode }
             {...card} />
         ))
       }

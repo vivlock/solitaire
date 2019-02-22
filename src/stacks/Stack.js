@@ -60,4 +60,10 @@ export default class Stack {
     }
     return undefined;
   }
+
+  updateAllCards (propKey, propVal) {
+    for(let card of this.cards) {
+      card[propKey] = propVal;
+    }
+  }
 }
