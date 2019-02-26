@@ -9,6 +9,7 @@ const CardLogic = {
     HEARTS: 'hearts',
     SPADES: 'spades'
   },
+  // returns true if card is 1 greater than compareTo
   isOneGreater: function (card, comparedTo) {
     const cardVal = this.ranks[card.rank];
     const compVal = this.ranks[comparedTo.rank];

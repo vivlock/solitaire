@@ -31,8 +31,8 @@ export default class RuleSet extends Component {
     for (let i = 0; i < this.tableauCount; i++) {
       tableaus.push({
         id: 'tbl-' + i,
-        props: { ...this.defaultTableauProps },
-        stack: new Stack()
+        stack: new Stack(),
+        props: { idx: i, ...this.defaultTableauProps }
       });
     }
     return tableaus;
@@ -43,8 +43,8 @@ export default class RuleSet extends Component {
     for (let i = 0; i < this.foundationCount; i++) {
       foundations.push({
         id: 'fdtn-' + i,
-        props: { ...this.defaultFoundationProps },
-        stack: new Stack()
+        stack: new Stack(),
+        props: { idx: i, ...this.defaultFoundationProps }
       });
     }
     return foundations;
@@ -55,6 +55,53 @@ export default class RuleSet extends Component {
       props: { ...this.defaultDeckProps },
       stack: new Stack(this.createCards())
     };
+  }
+
+  handleMoveOntoFoundation (card, foundationIdx) {
+    const { foundations } = this.state;
+    let foundation = foundations[foundationIdx];
+    foundation.stack.push(card);
+    this.setState({
+      foundations: foundations.slice(0, foundationIdx)
+        .concat([foundation])
+        .concat(foundations.slice(foundationIdx + 1))
+    });
+  }
+
+  handleMoveOntoTableau (card, tableauIdx) {
+    const { tableaus } = this.state;
+    let tableau = tableaus[tableauIdx];
+    tableau.stack.push(card);
+    this.setState({
+      tableaus: tableaus.slice(0, tableauIdx)
+        .concat([tableau])
+        .concat(tableaus.slice(tableauIdx + 1))
+    });
+  }
+
+  handleRemoveFoundationCard (cardId, foundationIdx) {
+    console.log('removecard foundation ruleset');
+    const { foundations } = this.state;
+    let foundation = foundations[foundationIdx];
+    foundation.stack.removeCardById(cardId);
+    console.log('stack after remove', foundation.stack);
+    this.setState({
+      foundations: foundations.slice(0, foundationIdx)
+        .concat([foundation])
+        .concat(foundations.slice(foundationIdx + 1))
+    });
+  }
+
+  handleRemoveTableauCard (cardId, tableauIdx) {
+    console.log('removecard tableau ruleset');
+    const { tableaus } = this.state;
+    let tableau = tableaus[tableauIdx];
+    tableau.stack.removeCardById(cardId);
+    this.setState({
+      tableaus: tableaus.slice(0, tableauIdx)
+        .concat([tableau])
+        .concat(tableaus.slice(tableauIdx + 1))
+    });
   }
 
   render () {

@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+// TODO: dynamically import and choose between html5backend and a touch backend
+// https://github.com/yahoo/react-dnd-touch-backend
+
 import LaBelleLucie from 'ruleSets/LaBelleLucie'
 import 'styles/gameboard.scss'
 

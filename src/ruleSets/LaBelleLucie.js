@@ -12,11 +12,13 @@ import CardLogic from 'helpers/cardLogic';
 export default class LaBelleLucie extends RuleSet {
   constructor (props) {
     super (props)
+    const unicodeMode = props.prefs.unicodeMode;
+
     this.tableauCount = 18;
     this.foundationCount = 4;
-    this.defaultTableauProps = { display: 'horizontal', draggable: true, unicodeMode: props.prefs.unicodeMode };
-    this.defaultFoundationProps = { draggable: false }
-    this.defaultDeckProps = { redeals: 2, stock: false, stockDraw: false, unicodeMode: props.prefs.unicodeMode };
+    this.defaultTableauProps = { display: 'horizontal', draggable: true, unicodeMode: unicodeMode };
+    this.defaultFoundationProps = { draggable: false, unicodeMode: unicodeMode }
+    this.defaultDeckProps = { redeals: 2, stock: false, stockDraw: false, unicodeMode: unicodeMode };
     this.state = {
       deck: this.createDeck(),
       tableaus: this.createTableaus(),
@@ -46,78 +48,56 @@ export default class LaBelleLucie extends RuleSet {
       card = deck.stack.pop();
       i++;
     }
-    tableaus = this.makeTopCardsDraggable(tableaus)
     this.setState({
       deck: deck,
       tableaus: tableaus
     })
   }
 
-  makeTopCardsDraggable (tableaus) {
-    for(let t of tableaus) {
-      // reset draggable on all cards
-      t.stack.updateAllCards('draggable', false);
-      // set draggable only on top
-      t.stack.peek()['draggable'] = true;
-    }
-    return tableaus;
-  }
-
-  handleMoveCard (card, fromStack, toStack) {
-    // can only move cards from tableau
-    if (fromStack.type === 'tableau') {
-      // can only move top card from tableau
-      if (fromStack.isTopCard(card)) {
-        if (toStack.type === 'tableau') {
-          this.handleMoveOntoTableau(card, toStack);
-        }
-        else if (toStack.type === 'foundation') {
-          this.handleMoveOntoFoundation(card, toStack);
+  canMoveOntoTableau (card, tableau) {
+    // cannot move onto empty tableau
+    if (!tableau.stack.isEmpty()) {
+      // can move if card is same suit as top card, one lower rank than top card
+      const topCard = tableau.stack.peek();
+      if (card.suit === topCard.suit) {
+        if (CardLogic.isOneGreater(topCard, card)) {
+          return true;
         }
       }
     }
+    return false;
   }
 
-  handleMoveOntoFoundation (card, foundation) {
-    // can only move the next higher rank card of the same suit as the top card onto foundation
-    const topCard = foundation.peek();
-    if (topCard === undefined) {
+  canMoveOntoFoundation (card, foundation) {
+    // if foundation is empty, can move if card is A
+    if (foundation.stack.isEmpty()) {
       if (card.rank === 'A') {
-        foundation.push(card);
-        return true;
+        return true
       }
     }
-    else if (topCard.suit === card.suit && CardLogic.isOneGreater(card, topCard)) {
-      foundation.push(card);
-      return true;
-    }
-    return false;
-  }
-
-  handleMoveOntoTableau (card, tableau) {
-    // can only move the next lower rank card of the same suit as the top card onto tableau
-    const topCard = tableau.peek();
-    if(topCard.suit === card.suit && CardLogic.isOneGreater(topCard, card)) {
-      tableau.push(card);
-      return true;
-    }
-    return false;
-  }
-
-  handleDoubleClickCard (card, stack, foundations, tableaus) {
-    if (stack.type === 'tableau') {
-      if (stack.isTopCard(card)) {
-        // TODO: check if card can go to any foundation; if so, move to that foundation
-      }
-      else {
-        // after the last deal, one tableau card can be moved to the top of its stack
-        if (this.state.redeals === 0 && this.state.draw === true) {
-          stack.removeCardById(card.id);
-          stack.push(card);
-          this.setState({ draw: false })
+    else {
+      // can move if card is same suit as top card, and one greater rank
+      const topCard = foundation.stack.peek();
+      if (card.suit === topCard.suit) {
+        if (CardLogic.isOneGreater(card, topCard)) {
+          return true;
         }
       }
     }
+    return false;
+  }
+
+  canDragFoundationCard (cardId, foundationIdx) {
+    return false;
+  }
+
+  canDragTableauCard (cardId, tableauIdx) {
+    // if card is top card
+    const tableau = this.state.tableaus[tableauIdx];
+    if (tableau.stack.peek().id === cardId) {
+      return true;
+    }
+    return false;
   }
 
   render () {
@@ -130,7 +110,14 @@ export default class LaBelleLucie extends RuleSet {
           <div className='foundation-col'>
             {
               foundations.map((f, i) => (
-                <Foundation key={ f.id } stack={ f.stack } { ...f.props }  />
+                <Foundation key={ f.id }
+                  stack={ f.stack }
+                  canMoveOnto={ this.canMoveOntoFoundation.bind(this) }
+                  handleMoveOnto={ this.handleMoveOntoFoundation.bind(this) }
+                  removeCard={ this.handleRemoveFoundationCard.bind(this) }
+                  canDragCard={ this.canDragFoundationCard.bind(this) }
+                  { ...f.props }
+                />
               ))
             }
           </div>
@@ -138,7 +125,14 @@ export default class LaBelleLucie extends RuleSet {
         <div className='tableau-container'>
           {
             tableaus.map((t) => (
-              <Tableau key={ t.id } stack={ t.stack } { ...t.props } />
+              <Tableau key={ t.id }
+                stack={ t.stack }
+                canMoveOnto={ this.canMoveOntoTableau.bind(this) }
+                handleMoveOnto={ this.handleMoveOntoTableau.bind(this) }
+                removeCard={ this.handleRemoveTableauCard.bind(this) }
+                canDragCard={ this.canDragTableauCard.bind(this) }
+                { ...t.props }
+              />
             ))
           }
         </div>

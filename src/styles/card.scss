@@ -2,9 +2,6 @@
   background-color: white;
   cursor: default;
   overflow: hidden;
-  &.draggable {
-    cursor: pointer;
-  }
 
   /* overwritten by unicode-mode below */
   border: 2px solid black;
