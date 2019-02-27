@@ -54,6 +54,14 @@ export default class LaBelleLucie extends RuleSet {
     })
   }
 
+  handleClickDeck () {
+    // // collect all cards from tableaus, shuffle and redeal
+    // const { tableaus, deck } = this.state;
+    // for (let tableau of tableaus) {
+    //   deck.stack.push()
+    // }
+  }
+
   canMoveOntoTableau (card, tableau) {
     // cannot move onto empty tableau
     if (!tableau.stack.isEmpty()) {
