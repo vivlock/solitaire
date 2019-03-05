@@ -32,17 +32,9 @@ export default class Stack {
     return undefined;
   }
 
-  isTopCard (card) {
-    const compareTo = this.peek();
-    if (card !== undefined && compareTo !== undefined && card.props.id === compareTo.id) {
-      return true;
-    }
-    return false;
-  }
-
-  removeCardById (id) {
+  removeCardById (cardId) {
     const index = this.cards.findIndex(function(card) {
-      return card.id === id;
+      return card.id === cardId;
     });
     if (this.cards.length > index) {
       const card = this.cards[index];
@@ -59,11 +51,5 @@ export default class Stack {
       return card;
     }
     return undefined;
-  }
-
-  updateAllCards (propKey, propVal) {
-    for(let card of this.cards) {
-      card[propKey] = propVal;
-    }
   }
 }

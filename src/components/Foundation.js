@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import Card from 'Card';
+import Card from 'components/Card';
 import 'styles/stacks.scss';
 import { DropTarget } from 'react-dnd';
 import { ItemTypes } from 'helpers/constants'
 
 class Foundation extends Component {
   render () {
+    const { unicodeMode, connectDropTarget } = this.props;
     const className="foundation" + (this.props.stack.isEmpty() ? " foundation-empty" : "");
     const topCard = this.props.stack.peek();
-    const { unicodeMode } = this.props;
-    const { connectDropTarget } = this.props;
+
     return connectDropTarget(
       <div className={ className }>
         { topCard !== undefined ?
@@ -22,11 +22,10 @@ class Foundation extends Component {
     )
   }
   removeCard(cardId) {
-    console.log('removeCard foundation '+this.props.idx, cardId);
     this.props.removeCard(cardId, this.props.idx);
   }
-  canDragCard(cardId) {
-    return this.props.canDragCard(cardId, this.props.idx);
+  canDragCard(card) {
+    return this.props.canDragCard(card, this.props.idx);
   }
 }
 

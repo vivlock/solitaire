@@ -1,42 +1,36 @@
-import React from 'react';
-import RuleSet from './RuleSet';
-import Deck from 'stacks/Deck';
-import Foundation from 'stacks/Foundation';
-import Tableau from 'stacks/Tableau';
+import React, { Component } from 'react';
+import RuleSet from 'helpers/RuleSet';
 import CardLogic from 'helpers/cardLogic';
+import Deck from 'components/Deck';
+import Foundation from 'components/Foundation';
+import Tableau from 'components/Tableau';
 
 // https://politaire.com/help/labellelucie
 // actually this is la belle lucie with a draw, it's more fun
 // but la belle lucie is a better name than
 // https://politaire.com/help/threeshufflesandadraw
-export default class LaBelleLucie extends RuleSet {
+export default class LaBelleLucie extends Component {
   constructor (props) {
     super (props)
-    const unicodeMode = props.prefs.unicodeMode;
 
-    this.tableauCount = 18;
-    this.foundationCount = 4;
-    this.defaultTableauProps = { display: 'horizontal', draggable: true, unicodeMode: unicodeMode };
-    this.defaultFoundationProps = { draggable: false, unicodeMode: unicodeMode }
-    this.defaultDeckProps = { redeals: 2, stock: false, stockDraw: false, unicodeMode: unicodeMode };
-    this.state = {
-      deck: this.createDeck(),
-      tableaus: this.createTableaus(),
-      foundations: this.createFoundations()
-    }
+    const unicodeMode = props.prefs.unicodeMode;
+    const tableauCount = 18;
+    const foundationCount = 4;
+    const tableauProps = { display: 'horizontal', draggable: true, unicodeMode: unicodeMode };
+    const foundationProps = { draggable: false, unicodeMode: unicodeMode }
+    const deckProps = { redeals: 2, stock: false, stockDraw: false, unicodeMode: unicodeMode };
+
+    this.ruleSet = RuleSet.new({ tableauCount, foundationCount, tableauProps, foundationProps, deckProps });
+    this.ruleSet.initialize(props.dispatch);
   }
 
   startGame () {
-    this.shuffleDeck();
-    this.deal();
-  }
+    const deckId = this.props.deck.stackId;
+    const deckStack = this.props.stacksById[deckId];
+    const dispatch = this.props.dispatch;
 
-  shuffleDeck () {
-    let { deck } = this.state;
-    CardLogic.shuffle(deck.stack.cards);
-    this.setState({
-      deck: deck
-    });
+    this.ruleSet.handleShuffle(dispatch, deckId, deckStack);
+    this.deal();
   }
 
   deal () {
@@ -95,21 +89,21 @@ export default class LaBelleLucie extends RuleSet {
     return false;
   }
 
-  canDragFoundationCard (cardId, foundationIdx) {
+  canDragFoundationCard (card, stackId) {
     return false;
   }
 
-  canDragTableauCard (cardId, tableauIdx) {
+  canDragTableauCard (card, stackId) {
     // if card is top card
-    const tableau = this.state.tableaus[tableauIdx];
-    if (tableau.stack.peek().id === cardId) {
+    const tableauStack = this.props.stacksById[stackId];
+    if (tableauStack.peek().id === card.id) {
       return true;
     }
     return false;
   }
 
   render () {
-    const { tableaus, foundations, deck } = this.state;
+    const { tableaus, foundations, deck } = this.props;
     const unicodeMode = this.props.prefs.unicodeMode;
     return (
       <div className={`gameboard ${unicodeMode ? 'unicode-mode' : ''}`}>

@@ -1,39 +1,31 @@
 export const CREATE_DECK = 'CREATE_DECK';
-export function createDeck(cardsById, stackId) {
+export function createDeck(stackId, props, cards) {
   return {
     type: CREATE_DECK,
-    cardsById, stackId
+    cards, stackId, props
   }
 }
 
 export const CREATE_TABLEAU = 'ADD_TABLEAU';
-export function createTableau(stackId) {
+export function createTableau(stackId, props) {
   return {
     type: CREATE_TABLEAU,
-    stackId
+    stackId, props
   }
 }
 
 export const CREATE_FOUNDATION = 'CREATE_FOUNDATION';
-export function createFoundation(stackId) {
+export function createFoundation(stackId, props) {
   return {
     type: CREATE_FOUNDATION,
-    stackId
-  }
-}
-
-export const SHUFFLE = 'SHUFFLE';
-export function shuffle(stackId) {
-  return {
-    type: SHUFFLE,
-    stackId
+    stackId, props
   }
 }
 
 export const SET_STACK_CARDS = 'SET_STACK_CARDS';
-export function setStackCards(stackId, cardIds) {
+export function setStackCards(stackId, cards) {
   return {
     type: SET_STACK_CARDS,
-    stackId, cardIds
+    stackId, cards
   }
 }
