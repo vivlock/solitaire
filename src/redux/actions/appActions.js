@@ -5,3 +5,10 @@ export function setUserPrefs(userPrefs) {
     userPrefs
   }
 }
+
+export const FINISHED_INITIALIZING = 'FINISHED_INITIALIZING';
+export function finishedInitializing() {
+  return {
+    type: FINISHED_INITIALIZING
+  }
+}

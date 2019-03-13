@@ -1,51 +1,67 @@
 import React, { Component } from 'react';
 import RuleSet from 'helpers/RuleSet';
 import CardLogic from 'helpers/cardLogic';
-import Deck from 'components/Deck';
-import Foundation from 'components/Foundation';
-import Tableau from 'components/Tableau';
+import Deck from 'containers/Deck';
+import Foundation from 'containers/Foundation';
+import Tableau from 'containers/Tableau';
+import { finishedInitializing } from 'redux/actions/appActions';
+import { updateStacks } from 'redux/actions/stackActions';
 
 // https://politaire.com/help/labellelucie
 // actually this is la belle lucie with a draw, it's more fun
 // but la belle lucie is a better name than
 // https://politaire.com/help/threeshufflesandadraw
-export default class LaBelleLucie extends Component {
+export default class LaBelleLucieDisplay extends Component {
   constructor (props) {
     super (props)
 
-    const unicodeMode = props.prefs.unicodeMode;
     const tableauCount = 18;
     const foundationCount = 4;
-    const tableauProps = { display: 'horizontal', draggable: true, unicodeMode: unicodeMode };
-    const foundationProps = { draggable: false, unicodeMode: unicodeMode }
-    const deckProps = { redeals: 2, stock: false, stockDraw: false, unicodeMode: unicodeMode };
+    const tableauProps = { display: 'horizontal' };
+    const foundationProps = {};
+    const deckProps = { redeals: 2, stock: false, stockDraw: false };
 
-    this.ruleSet = RuleSet.new({ tableauCount, foundationCount, tableauProps, foundationProps, deckProps });
+    this.ruleSet = new RuleSet({ tableauCount, foundationCount, tableauProps, foundationProps, deckProps });
     this.ruleSet.initialize(props.dispatch);
   }
 
+  componentDidMount() {
+    this.startGame();
+  }
+
   startGame () {
+    console.log('startGame', this.props);
+
     const deckId = this.props.deck.stackId;
-    const deckStack = this.props.stacksById[deckId];
+    const deckCards = this.props.stacksById[deckId];
     const dispatch = this.props.dispatch;
 
-    this.ruleSet.handleShuffle(dispatch, deckId, deckStack);
-    this.deal();
+    this.ruleSet.handleShuffle(dispatch, deckId, deckCards);
+    //this.deal();
   }
 
   deal () {
-    let { tableaus, deck } = this.state;
-    let i = 0;
-    let card = deck.stack.pop();
-    while(card !== undefined) {
-      tableaus[i % this.tableauCount].stack.push(card);
-      card = deck.stack.pop();
-      i++;
+    const { tableaus, deck, stacksById, dispatch } = this.props;
+    const cards = stacksById[deck.stackId];
+    const tableauCount = tableaus.length;
+
+    console.log('deal tableaus', tableaus);
+    console.log('deal deck', deck);
+    console.log('deal cards', cards);
+
+    let stacks = { [deck.stackId]: [] };
+    for(let i = 0; i < tableauCount; i++ ) {
+      stacks[tableaus[i].stackId] = [];
     }
-    this.setState({
-      deck: deck,
-      tableaus: tableaus
-    })
+
+    const length = cards.length - 1;
+    for(let i = 0; i < length; i++) {
+      stacks[tableaus[i % tableauCount].stackId].push(cards[i]);
+    }
+
+    console.log('after deal', stacks);
+
+    dispatch(updateStacks(stacks))
   }
 
   handleClickDeck () {
@@ -56,11 +72,13 @@ export default class LaBelleLucie extends Component {
     // }
   }
 
-  canMoveOntoTableau (card, tableau) {
+  canMoveOntoTableau (card, stackId) {
+    const tableauCards = this.props.stacksById[stackId]
+
     // cannot move onto empty tableau
-    if (!tableau.stack.isEmpty()) {
+    if (tableauCards.length !== 0) {
       // can move if card is same suit as top card, one lower rank than top card
-      const topCard = tableau.stack.peek();
+      const topCard = tableauCards[-1];
       if (card.suit === topCard.suit) {
         if (CardLogic.isOneGreater(topCard, card)) {
           return true;
@@ -70,16 +88,18 @@ export default class LaBelleLucie extends Component {
     return false;
   }
 
-  canMoveOntoFoundation (card, foundation) {
+  canMoveOntoFoundation (card, stackId) {
+    const foundationCards = this.props.stacksById[stackId];
+
     // if foundation is empty, can move if card is A
-    if (foundation.stack.isEmpty()) {
+    if (foundationCards.length !== 0) {
       if (card.rank === 'A') {
         return true
       }
     }
     else {
       // can move if card is same suit as top card, and one greater rank
-      const topCard = foundation.stack.peek();
+      const topCard = foundationCards[-1];
       if (card.suit === topCard.suit) {
         if (CardLogic.isOneGreater(card, topCard)) {
           return true;
@@ -95,28 +115,26 @@ export default class LaBelleLucie extends Component {
 
   canDragTableauCard (card, stackId) {
     // if card is top card
-    const tableauStack = this.props.stacksById[stackId];
-    if (tableauStack.peek().id === card.id) {
+    const tableauCards = this.props.stacksById[stackId];
+    if (tableauCards[-1].id === card.id) {
       return true;
     }
     return false;
   }
 
   render () {
-    const { tableaus, foundations, deck } = this.props;
-    const unicodeMode = this.props.prefs.unicodeMode;
+    const { tableaus, foundations, deck, unicodeMode } = this.props;
     return (
       <div className={`gameboard ${unicodeMode ? 'unicode-mode' : ''}`}>
-        <Deck {...deck.props} stack={ deck.stack } />
+        <Deck {...deck.props} />
         <div className='foundation-container'>
           <div className='foundation-col'>
             {
               foundations.map((f, i) => (
-                <Foundation key={ f.id }
-                  stack={ f.stack }
+                <Foundation key={ f.stackId }
                   canMoveOnto={ this.canMoveOntoFoundation.bind(this) }
-                  handleMoveOnto={ this.handleMoveOntoFoundation.bind(this) }
-                  removeCard={ this.handleRemoveFoundationCard.bind(this) }
+                  //handleMoveOnto={ this.handleMoveOntoFoundation.bind(this) }
+                  //removeCard={ this.handleRemoveFoundationCard.bind(this) }
                   canDragCard={ this.canDragFoundationCard.bind(this) }
                   { ...f.props }
                 />
@@ -127,11 +145,10 @@ export default class LaBelleLucie extends Component {
         <div className='tableau-container'>
           {
             tableaus.map((t) => (
-              <Tableau key={ t.id }
-                stack={ t.stack }
+              <Tableau key={ t.stackId }
                 canMoveOnto={ this.canMoveOntoTableau.bind(this) }
-                handleMoveOnto={ this.handleMoveOntoTableau.bind(this) }
-                removeCard={ this.handleRemoveTableauCard.bind(this) }
+                //handleMoveOnto={ this.handleMoveOntoTableau.bind(this) }
+                //removeCard={ this.handleRemoveTableauCard.bind(this) }
                 canDragCard={ this.canDragTableauCard.bind(this) }
                 { ...t.props }
               />

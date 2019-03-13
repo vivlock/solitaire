@@ -1,11 +1,12 @@
-import { SET_USER_PREFS } from 'redux/actions/appActions';
-import { CREATE_DECK, CREATE_TABLEAU, CREATE_FOUNDATION, SET_STACK_CARDS } from 'redux/actions/stackActions';
+import { SET_USER_PREFS, FINISHED_INITIALIZING } from 'redux/actions/appActions';
+import { CREATE_DECK, CREATE_TABLEAU, CREATE_FOUNDATION, SET_STACK_CARDS, UPDATE_STACKS } from 'redux/actions/stackActions';
 import { MOVE_CARD } from 'redux/actions/cardActions';
 
-import Stack from 'stacks/Stack';
-
 const initialState = {
-  userPrefs: {},
+  prefs: { unicodeMode: true },
+  finishedInitializing: false,
+  gameStartSent: false,
+  gameStarted: false,
   stacksById: {},
   tableaus: [],
   foundations: [],
@@ -13,79 +14,99 @@ const initialState = {
 }
 
 export default function solitaireApp(state = initialState, action) {
+  console.log('reducer', state);
+
   switch (action.type) {
+    case FINISHED_INITIALIZING: {
+      console.log('finished initializing');
+      return Object.assign({}, state, {
+        finishedInitializing: true
+      });
+    }
+
     case SET_USER_PREFS: {
-      return {
-        ...state,
-        userPrefs: action.userPrefs
-      };
+      return Object.assign({}, state, {
+        prefs: action.userPrefs
+      });
     }
 
     case CREATE_DECK: {
-      return {
+      const newState = {
         ...state,
-        stacksById: {
-          ...state.stacksById,
-          [action.stackId]: new Stack(action.cards)
-        },
-        deck: { stackId: action.stackId }
-      };
+        stacksById: Object.assign({}, state.stacksById, {
+          [action.stackId]: action.cards
+        }),
+        deck: { stackId: action.stackId, props: action.props }
+      }
+      console.log('create_deck returns', newState);
+      return newState;
     }
 
     case CREATE_TABLEAU: {
       const tableaus = state.tableaus;
       const newTableau = {
-        stackId: action.id
+        stackId: action.stackId,
+        props: action.props
       }
-      return {
+      const newState = {
         ...state,
-        stacksById: {
-          ...state.stacksById,
-          [action.id]: new Stack()
-        },
+        stacksById: Object.assign({}, state.stacksById, {
+          [action.stackId]: []
+        }),
         tableaus: tableaus.concat([newTableau])
       };
+      console.log('create_tableau returns', newState);
+      return newState;
     }
 
     case CREATE_FOUNDATION: {
       const foundations = state.foundations;
       const newFoundation = {
-        stackId: action.id
+        stackId: action.stackId,
+        props: action.props
       }
-      return {
+      const newState = {
         ...state,
-        stacksById: {
-          ...state.stacksById,
-          [action.id]: new Stack(),
-        },
+        stacksById: Object.assign({}, state.stacksById, {
+          [action.stackId]: []
+        }),
         foundations: foundations.concat([newFoundation])
       };
+      console.log('create_foundation returns', newState);
+      return newState;
     }
 
     case SET_STACK_CARDS: {
       return {
         ...state,
-        stacksById: {
-          ...state.stacksById,
+        stacksById: Object.assign({}, state.stacksById, {
           [action.stackId]: action.cards
-        }
+        })
       };
     }
 
-    case MOVE_CARD: {
-      const fromStack = state.stacksById[action.fromId];
-      const toStack = state.stacksById[action.toId];
+    case UPDATE_STACKS: {
+      console.log('update_stacks');
+      return {
+        ...state,
+        stacksById: Object.assign({}, state.stacksById, action.stacksById)
+      }
+    }
 
-      fromStack.removeCardById(action.card.id);
-      toStack.push(action.card);
+    case MOVE_CARD: {
+      const card = action.card;
+      const from = state.stacksById[action.fromId];
+      const to = state.stacksById[action.toId];
+      const updatedFrom = from.filter(function (thisCard) {
+        return thisCard.id !== card.id;
+      });
 
       return {
         ...state,
-        stacksById: {
-          ...state.stacksById,
-          [action.fromId]: fromStack,
-          [action.toId]: toStack
-        }
+        stacksById: Object.assign({}, state.stacksById, {
+          [action.fromId]: updatedFrom,
+          [action.toId]: to.concat([card])
+        })
       }
     }
 

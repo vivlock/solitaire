@@ -29,3 +29,11 @@ export function setStackCards(stackId, cards) {
     stackId, cards
   }
 }
+
+export const UPDATE_STACKS = 'UPDATE_STACKS';
+export function updateStacks(stacksById) {
+  return {
+    type: UPDATE_STACKS,
+    stacksById
+  }
+}

@@ -1,6 +1,6 @@
 import CardLogic from 'helpers/cardLogic';
 import { createDeck, createTableau, createFoundation, setStackCards } from 'redux/actions/stackActions';
-import { moveCard } from 'redux/ actions/cardActions';
+import { moveCard } from 'redux/actions/cardActions';
 
 class RuleSet {
   constructor ({ tableauCount, foundationCount, tableauProps, foundationProps, deckProps }) {
@@ -27,8 +27,8 @@ class RuleSet {
       return overrideFn();
     }
 
-    let cards = [];
-    for(let rank of CardLogic.ranks) {
+    const cards = [];
+    for(let rank in CardLogic.ranks) {
       for(let suit in CardLogic.suits) {
         cards.push({ suit: CardLogic.suits[suit], rank: rank, id: `card-${rank}-${suit}` });
       }
@@ -39,29 +39,32 @@ class RuleSet {
   createTableaus (dispatch) {
     for (let i = 0; i < this.tableauCount; i++) {
       const id = 'tbl-' + i;
-      dispatch(createTableau(id, this.tableauProps));
+      dispatch(createTableau(id, { id: id, ...this.tableauProps }));
     }
   }
 
   createFoundations (dispatch) {
     for (let i = 0; i < this.foundationCount; i++) {
       const id = 'fdtn-' + i;
-      dispatch(createFoundation(id, this.foundationProps));
+      dispatch(createFoundation(id, { id: id, ...this.foundationProps }));
     }
   }
 
   createDeck (dispatch, overrideCardFn) {
-    const stackId = "deck";
+    const id = "deck";
     const cards = this.generateCards(overrideCardFn);
-    dispatch(createDeck(stackId, this.deckProps, cards));
+    dispatch(createDeck(id, { id: id, ...this.deckProps }, cards));
   }
 
   handleMoveCard (dispatch, card, fromId, toId) {
     dispatch(moveCard(card, fromId, toId));
   }
 
-  handleShuffle (dispatch, stackId, stack) {
-    dispatch(setStackCards(stackId, stack.shuffle()));
+  handleShuffle (dispatch, stackId, cards) {
+    if(cards !== undefined) {
+      let shuffled = CardLogic.shuffle(cards);
+      dispatch(setStackCards(stackId, shuffled));
+    }
   }
 }
 

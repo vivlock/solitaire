@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import Card from 'components/Card'
+import Card from 'components/CardDisplay'
 import 'styles/stacks.scss'
 import { DropTarget } from 'react-dnd';
 import { ItemTypes } from 'helpers/constants'
 
-class Tableau extends Component {
+class TableauDisplay extends Component {
   render () {
-    const { stack, display, unicodeMode, connectDropTarget } = this.props;
-    const empty = stack.isEmpty();
+    const { display, unicodeMode, connectDropTarget } = this.props;
+    const cards = (this.props.cards === undefined ? [] : this.props.cards);
+    const empty = cards.length === 0;
 
     const className="tableau tableau-" +
       (display ? display : 'vertical') +
@@ -28,9 +29,9 @@ class Tableau extends Component {
     return connectDropTarget(
       <div className={className}>
       {
-        stack.cards.map((card, index) => (
+        cards.map((card, index) => (
           <Card key={ card.id } faceup={ true } canDrag={ this.canDragCard.bind(this) }
-            style={{ [posType]: `${offset * index}px` }} unicodeMode={ unicodeMode }
+            style={{ [posType]: `${offset * index}px` }}
             removeFromPreviousStack={ this.removeCard.bind(this) }
             { ...card } />
         ))
@@ -40,11 +41,11 @@ class Tableau extends Component {
   }
 
   removeCard(cardId) {
-    this.props.removeCard(cardId, this.props.idx);
+    this.props.removeCard(cardId, this.props.id);
   }
 
   canDragCard(card) {
-    return this.props.canDragCard(card, this.props.idx);
+    return this.props.canDragCard(card, this.props.id);
   }
 }
 
@@ -52,10 +53,10 @@ const tableauDropSpec = {
   drop(props, monitor, component) {
     const card = monitor.getItem();
     card.removeFromPreviousStack(card.id);
-    props.handleMoveOnto(card, props.idx);
+    props.handleMoveOnto(card, props.id);
   },
   canDrop(props, monitor) {
-    return props.canMoveOnto(monitor.getItem(), props);
+    return props.canMoveOnto(monitor.getItem(), props.id);
   }
 }
 
@@ -67,4 +68,4 @@ function tableauCollect(connect, monitor) {
   }
 }
 
-export default DropTarget(ItemTypes.CARD, tableauDropSpec, tableauCollect)(Tableau);
+export default DropTarget(ItemTypes.CARD, tableauDropSpec, tableauCollect)(TableauDisplay);

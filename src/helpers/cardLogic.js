@@ -24,12 +24,14 @@ const CardLogic = {
     }
     throw new Error(`Invalid card value: CardLogic.getRankValue(rank: '${rank}')`);
   },
-  // Durstenfeld shuffle in place
+  // Durstenfeld shuffle
   shuffle: function (cards) {
+    const shuffledCards = [];
     for (let i = cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [cards[i], cards[j]] = [cards[j], cards[i]];
+      [shuffledCards[i], shuffledCards[j]] = [cards[j], cards[i]];
     }
+    return shuffledCards;
   }
 }
 export default CardLogic;

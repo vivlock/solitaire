@@ -52,4 +52,8 @@ export default class Stack {
     }
     return undefined;
   }
+
+  updateReference () {
+    return new Stack(this.cards);
+  }
 }

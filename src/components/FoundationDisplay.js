@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
-import Card from 'components/Card';
+import Card from 'components/CardDisplay';
 import 'styles/stacks.scss';
 import { DropTarget } from 'react-dnd';
 import { ItemTypes } from 'helpers/constants'
 
-class Foundation extends Component {
+class FoundationDisplay extends Component {
   render () {
-    const { unicodeMode, connectDropTarget } = this.props;
-    const className="foundation" + (this.props.stack.isEmpty() ? " foundation-empty" : "");
-    const topCard = this.props.stack.peek();
+    const { connectDropTarget } = this.props;
+    const cards = (this.props.cards === undefined ? [] : this.props.cards);
+    const empty = cards.length === 0;
+
+    const className="foundation" + (empty ? " foundation-empty" : "");
+    const topCard = cards[-1];
 
     return connectDropTarget(
       <div className={ className }>
-        { topCard !== undefined ?
+        { !empty ?
           <Card key={ topCard.id } canDrag={ this.canDragCard.bind(this) }
-            faceup={ true } unicodeMode={ unicodeMode }
+            faceup={ true }
             removeFromPreviousStack={ this.removeCard.bind(this) }
             { ...topCard }
           /> : "" }
@@ -22,10 +25,10 @@ class Foundation extends Component {
     )
   }
   removeCard(cardId) {
-    this.props.removeCard(cardId, this.props.idx);
+    this.props.removeCard(cardId, this.props.id);
   }
   canDragCard(card) {
-    return this.props.canDragCard(card, this.props.idx);
+    return this.props.canDragCard(card, this.props.id);
   }
 }
 
@@ -33,10 +36,10 @@ const foundationDropSpec = {
   drop(props, monitor, component) {
     const card = monitor.getItem();
     card.removeFromPreviousStack(card.id);
-    props.handleMoveOnto(card, props.idx);
+    props.handleMoveOnto(card, props.id);
   },
   canDrop(props, monitor) {
-    return props.canMoveOnto(monitor.getItem(), props);
+    return props.canMoveOnto(monitor.getItem(), props.id);
   }
 }
 
@@ -48,4 +51,4 @@ function foundationCollect(connect, monitor) {
   }
 }
 
-export default DropTarget(ItemTypes.CARD, foundationDropSpec, foundationCollect)(Foundation);
+export default DropTarget(ItemTypes.CARD, foundationDropSpec, foundationCollect)(FoundationDisplay);
