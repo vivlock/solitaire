@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import { DragDropContextProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import LaBelleLucie from 'containers/ruleSets/LaBelleLucie'
+import { Views } from 'helpers/constants';
 import 'styles/gameboard.scss'
 
+import LaBelleLucie from 'ruleSets/LaBelleLucie';
+
 class GameDisplay extends Component {
-  // TODO: dynamically import and choose between html5backend and a touch backend
-  // https://github.com/yahoo/react-dnd-touch-backend
 
   // TODO: dynamic ruleset choice
   // https://medium.com/@Carmichaelize/dynamic-tag-names-in-react-and-jsx-17e366a684e9
@@ -16,12 +14,32 @@ class GameDisplay extends Component {
 
   //TODO: user settable preferences
 
+  constructor (props) {
+    super(props);
+    this.ruleSet = new LaBelleLucie();
+  }
+
   render () {
-    return (
-      <DragDropContextProvider backend={HTML5Backend}>
-        <LaBelleLucie />
-      </DragDropContextProvider>
-    )
+    const { view, ...props } = this.props;
+    switch (view) {
+      case Views.GAME:
+        return this.ruleSet.render(props);
+
+      case Views.RULES:
+        return (
+          <div>HEY HOW DO I PLAY</div>
+        )
+
+      case Views.PREFS:
+        return (
+          <div>CHANGE YOUR PREFS</div>
+        )
+
+      default:
+        return (
+          <div>I'M LOST</div>
+        )
+    }
   }
 }
 

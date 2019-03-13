@@ -1,53 +1,42 @@
-import React, { Component } from 'react';
-import RuleSet from 'helpers/RuleSet';
-import CardLogic from 'helpers/cardLogic';
-import Deck from 'containers/Deck';
-import Foundation from 'containers/Foundation';
+import React from 'React';
+
 import Tableau from 'containers/Tableau';
-import { finishedInitializing } from 'redux/actions/appActions';
+import Foundation from 'containers/Foundation';
+import Deck from 'containers/Deck';
+
+import RuleSet from 'ruleSets/RuleSet'
+import CardLogic from 'helpers';
+
 import { updateStacks } from 'redux/actions/stackActions';
 
-// https://politaire.com/help/labellelucie
-// actually this is la belle lucie with a draw, it's more fun
-// but la belle lucie is a better name than
-// https://politaire.com/help/threeshufflesandadraw
-export default class LaBelleLucieDisplay extends Component {
+export class LaBelleLucie extends RuleSet {
   constructor (props) {
-    super (props)
+    super(props);
 
-    const tableauCount = 18;
-    const foundationCount = 4;
-    const tableauProps = { display: 'horizontal' };
-    const foundationProps = {};
-    const deckProps = { redeals: 2, stock: false, stockDraw: false };
+    this.tableauCount = 18;
+    this.foundationCount = 4;
+    this.tableauProps = { display: 'horizontal' };
+    this.foundationProps = {};
+    this.deckProps = { redeals: 2, stock: false, stockDraw: false };
 
-    this.ruleSet = new RuleSet({ tableauCount, foundationCount, tableauProps, foundationProps, deckProps });
-    this.ruleSet.initialize(props.dispatch);
+    this.initialize(props.dispatch);
   }
 
-  componentDidMount() {
-    this.startGame();
-  }
+  startGame (props) {
+    console.log('startGame', props);
 
-  startGame () {
-    console.log('startGame', this.props);
+    const deckId = props.deck.stackId;
+    const deckCards = props.stacksById[deckId];
+    const dispatch = props.dispatch;
 
-    const deckId = this.props.deck.stackId;
-    const deckCards = this.props.stacksById[deckId];
-    const dispatch = this.props.dispatch;
-
-    this.ruleSet.handleShuffle(dispatch, deckId, deckCards);
+    this.handleShuffle(dispatch, deckId, deckCards);
     //this.deal();
   }
 
-  deal () {
-    const { tableaus, deck, stacksById, dispatch } = this.props;
+  deal (props) {
+    const { tableaus, deck, stacksById, dispatch } = props;
     const cards = stacksById[deck.stackId];
     const tableauCount = tableaus.length;
-
-    console.log('deal tableaus', tableaus);
-    console.log('deal deck', deck);
-    console.log('deal cards', cards);
 
     let stacks = { [deck.stackId]: [] };
     for(let i = 0; i < tableauCount; i++ ) {
@@ -58,8 +47,6 @@ export default class LaBelleLucieDisplay extends Component {
     for(let i = 0; i < length; i++) {
       stacks[tableaus[i % tableauCount].stackId].push(cards[i]);
     }
-
-    console.log('after deal', stacks);
 
     dispatch(updateStacks(stacks))
   }
@@ -88,18 +75,16 @@ export default class LaBelleLucieDisplay extends Component {
     return false;
   }
 
-  canMoveOntoFoundation (card, stackId) {
-    const foundationCards = this.props.stacksById[stackId];
-
+  canMoveOntoFoundation (card, stack) {
     // if foundation is empty, can move if card is A
-    if (foundationCards.length !== 0) {
+    if (stack.length !== 0) {
       if (card.rank === 'A') {
         return true
       }
     }
     else {
       // can move if card is same suit as top card, and one greater rank
-      const topCard = foundationCards[-1];
+      const topCard = stack[-1];
       if (card.suit === topCard.suit) {
         if (CardLogic.isOneGreater(card, topCard)) {
           return true;
@@ -109,21 +94,18 @@ export default class LaBelleLucieDisplay extends Component {
     return false;
   }
 
-  canDragFoundationCard (card, stackId) {
+  canDragFoundationCard (card, stack) {
+    // can't drag foundation cards
     return false;
   }
 
-  canDragTableauCard (card, stackId) {
-    // if card is top card
-    const tableauCards = this.props.stacksById[stackId];
-    if (tableauCards[-1].id === card.id) {
-      return true;
-    }
-    return false;
+  canDragTableauCard (card, stack) {
+    // can drag top card only
+    return stack[-1] === card.id;
   }
 
-  render () {
-    const { tableaus, foundations, deck, unicodeMode } = this.props;
+  render (props) {
+    const { tableaus, foundations, deck, unicodeMode } = props;
     return (
       <div className={`gameboard ${unicodeMode ? 'unicode-mode' : ''}`}>
         <Deck {...deck.props} />
@@ -158,5 +140,4 @@ export default class LaBelleLucieDisplay extends Component {
       </div>
     )
   }
-
 }
