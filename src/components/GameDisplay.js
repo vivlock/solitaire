@@ -16,7 +16,7 @@ class GameDisplay extends Component {
 
   constructor (props) {
     super(props);
-    this.ruleSet = new LaBelleLucie();
+    this.ruleSet = new LaBelleLucie(props.dispatch);
   }
 
   render () {

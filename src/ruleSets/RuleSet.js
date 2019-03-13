@@ -15,8 +15,8 @@ class RuleSet {
     this.foundationProps = {};  // props to be passed to each foundation
   }
 
-  initialize (dispatch, overrideCardFn) {
-    this.createDeck(dispatch, overrideCardFn);
+  initialize (dispatch) {
+    this.createDeck(dispatch);
     this.createTableaus(dispatch);
     this.createFoundations(dispatch);
   }

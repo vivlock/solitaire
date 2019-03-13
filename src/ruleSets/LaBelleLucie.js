@@ -10,8 +10,8 @@ import CardLogic from 'helpers';
 import { updateStacks } from 'redux/actions/stackActions';
 
 export class LaBelleLucie extends RuleSet {
-  constructor (props) {
-    super(props);
+  constructor (dispatch) {
+    super();
 
     this.tableauCount = 18;
     this.foundationCount = 4;
@@ -19,7 +19,7 @@ export class LaBelleLucie extends RuleSet {
     this.foundationProps = {};
     this.deckProps = { redeals: 2, stock: false, stockDraw: false };
 
-    this.initialize(props.dispatch);
+    this.initialize(dispatch);
   }
 
   startGame (props) {
