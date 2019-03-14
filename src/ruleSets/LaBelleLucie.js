@@ -7,16 +7,14 @@ import Deck from 'containers/Deck';
 import RuleSet from 'ruleSets/RuleSet'
 import CardLogic from 'helpers';
 
-import { updateStacks } from 'redux/actions/stackActions';
+import { updateStacks, moveCard } from 'redux/actions/stackActions';
 
 export class LaBelleLucie extends RuleSet {
   constructor (dispatch) {
     super();
 
     this.tableauCount = 18;
-    this.foundationCount = 4;
     this.tableauProps = { display: 'horizontal' };
-    this.foundationProps = {};
     this.deckProps = { redeals: 2, stock: false, stockDraw: false };
 
     this.initialize(dispatch);
@@ -49,14 +47,6 @@ export class LaBelleLucie extends RuleSet {
     }
 
     dispatch(updateStacks(stacks))
-  }
-
-  handleClickDeck () {
-    // // collect all cards from tableaus, shuffle and redeal
-    // const { tableaus, deck } = this.state;
-    // for (let tableau of tableaus) {
-    //   deck.stack.push()
-    // }
   }
 
   canMoveOntoTableau (card, stackId) {
@@ -104,20 +94,33 @@ export class LaBelleLucie extends RuleSet {
     return stack[-1] === card.id;
   }
 
+  handleMoveCard (dispatch, card, fromStackId, toStackId) {
+    dispatch(moveCard(card, fromStackId, toStackId));
+  }
+
+  handleClickDeck () {
+    console.log('deck clicked');
+    // redeal -- collect cards from tableaus back into the deck
+    // deal as normal
+    // decrement # of redeals available
+  }
+
   render (props) {
     const { tableaus, foundations, deck, unicodeMode } = props;
     return (
       <div className={`gameboard ${unicodeMode ? 'unicode-mode' : ''}`}>
-        <Deck {...deck.props} />
+        <Deck {...deck.props}
+          handleClick={ this.handleClickDeck.bind(this) }
+          handleMoveCard={ this.handleMoveCard.bind(this) }
+        />
         <div className='foundation-container'>
           <div className='foundation-col'>
             {
               foundations.map((f, i) => (
                 <Foundation key={ f.stackId }
                   canMoveOnto={ this.canMoveOntoFoundation.bind(this) }
-                  //handleMoveOnto={ this.handleMoveOntoFoundation.bind(this) }
-                  //removeCard={ this.handleRemoveFoundationCard.bind(this) }
                   canDragCard={ this.canDragFoundationCard.bind(this) }
+                  handleMoveCard={ this.handleMoveCard.bind(this) }
                   { ...f.props }
                 />
               ))
@@ -129,9 +132,8 @@ export class LaBelleLucie extends RuleSet {
             tableaus.map((t) => (
               <Tableau key={ t.stackId }
                 canMoveOnto={ this.canMoveOntoTableau.bind(this) }
-                //handleMoveOnto={ this.handleMoveOntoTableau.bind(this) }
-                //removeCard={ this.handleRemoveTableauCard.bind(this) }
                 canDragCard={ this.canDragTableauCard.bind(this) }
+                handleMoveCard={ this.handleMoveCard.bind(this) }
                 { ...t.props }
               />
             ))

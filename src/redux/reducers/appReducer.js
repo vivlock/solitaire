@@ -1,6 +1,6 @@
 import { SET_USER_PREFS, FINISHED_INITIALIZING } from 'redux/actions/appActions';
-import { CREATE_DECK, CREATE_TABLEAU, CREATE_FOUNDATION, SET_STACK_CARDS, UPDATE_STACKS } from 'redux/actions/stackActions';
-import { MOVE_CARD } from 'redux/actions/cardActions';
+import { CREATE_DECK, CREATE_TABLEAU, CREATE_FOUNDATION,
+  SET_STACK_CARDS, UPDATE_STACKS, MOVE_CARD } from 'redux/actions/stackActions';
 import { Views } from 'helpers/constants';
 
 const initialState = {

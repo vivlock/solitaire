@@ -5,7 +5,7 @@ import UserPrefs from 'containers/UserPrefs';
 import ChooseGame from 'containers/ChooseGame';
 
 class TabsDisplay extends Component {
-  getViewPane (view) {
+  renderViewPane (view) {
     switch (view) {
       case Views.GAME:
         return <Game />;
@@ -20,7 +20,6 @@ class TabsDisplay extends Component {
 
   render () {
     const { view } = this.props;
-    const viewpane = this.getViewPane(view);
     return (
       <div>
         <ul class='tabs'>
@@ -28,7 +27,7 @@ class TabsDisplay extends Component {
           <li id={`tab-${Views.CHOOSE}`}>Choose Game</li>
           <li id={`tab-${Views.PREFS}`}>Preferences</li>
         </ul>
-        { viewpane }
+        { this.renderViewPane(view) }
       </div>
     )
   }

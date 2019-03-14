@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import Game from 'containers/Game';
+import Tabs from 'containers/Tabs';
 
 class App extends Component {
   // TODO: dynamically import and choose between html5backend and a touch backend
@@ -10,7 +10,7 @@ class App extends Component {
     return (
       <div className="App">
         <DragDropContextProvider backend={HTML5Backend}>
-          <Game />
+          <Tabs />
         </DragDropContextProvider>
       </div>
     );
