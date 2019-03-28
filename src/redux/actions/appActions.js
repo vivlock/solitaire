@@ -12,3 +12,11 @@ export function finishedInitializing() {
     type: FINISHED_INITIALIZING
   }
 }
+
+export const UPDATE_VIEW = 'UPDATE_VIEW';
+export function updateView(view) {
+  return {
+    type: UPDATE_VIEW,
+    view
+  }
+}

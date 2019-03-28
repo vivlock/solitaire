@@ -1,23 +1,26 @@
-import React from 'React';
+import React from 'react';
 
 import Tableau from 'containers/Tableau';
 import Foundation from 'containers/Foundation';
 import Deck from 'containers/Deck';
 
 import RuleSet from 'ruleSets/RuleSet'
-import CardLogic from 'helpers';
+import CardLogic from 'helpers/cardLogic';
 
-import { updateStacks, moveCard } from 'redux/actions/stackActions';
+import { cardFunctions } from 'redux/actions/cardActions';
 
-export class LaBelleLucie extends RuleSet {
-  constructor (dispatch) {
+export default class LaBelleLucie extends RuleSet {
+  constructor (initialized, dispatch) {
     super();
 
     this.tableauCount = 18;
     this.tableauProps = { display: 'horizontal' };
     this.deckProps = { redeals: 2, stock: false, stockDraw: false };
 
-    this.initialize(dispatch);
+    // so we don't reinitialize the game state every time we switch tabs
+    if(!initialized) {
+      this.initialize(dispatch);
+    }
   }
 
   startGame (props) {
@@ -28,7 +31,7 @@ export class LaBelleLucie extends RuleSet {
     const dispatch = props.dispatch;
 
     this.handleShuffle(dispatch, deckId, deckCards);
-    //this.deal();
+    this.deal(props);
   }
 
   deal (props) {
@@ -46,16 +49,16 @@ export class LaBelleLucie extends RuleSet {
       stacks[tableaus[i % tableauCount].stackId].push(cards[i]);
     }
 
-    dispatch(updateStacks(stacks))
+    dispatch(cardFunctions.updateStacks(stacks))
   }
 
-  canMoveOntoTableau (card, stackId) {
-    const tableauCards = this.props.stacksById[stackId]
-
+  canMoveOntoTableau (card, stack) {
+    console.log('canMoveOntoTableau');
+    const length = stack.length;
     // cannot move onto empty tableau
-    if (tableauCards.length !== 0) {
+    if (length !== 0) {
       // can move if card is same suit as top card, one lower rank than top card
-      const topCard = tableauCards[-1];
+      const topCard = stack[length - 1];
       if (card.suit === topCard.suit) {
         if (CardLogic.isOneGreater(topCard, card)) {
           return true;
@@ -66,15 +69,17 @@ export class LaBelleLucie extends RuleSet {
   }
 
   canMoveOntoFoundation (card, stack) {
+    console.log('canMoveOntoFoundation', card, stack);
+    const length = stack.length;
     // if foundation is empty, can move if card is A
-    if (stack.length !== 0) {
+    if (length === 0) {
       if (card.rank === 'A') {
         return true
       }
     }
     else {
       // can move if card is same suit as top card, and one greater rank
-      const topCard = stack[-1];
+      const topCard = stack[length - 1];
       if (card.suit === topCard.suit) {
         if (CardLogic.isOneGreater(card, topCard)) {
           return true;
@@ -84,18 +89,21 @@ export class LaBelleLucie extends RuleSet {
     return false;
   }
 
-  canDragFoundationCard (card, stack) {
+  canDragFoundationCard = (card, stack) => {
     // can't drag foundation cards
     return false;
   }
 
-  canDragTableauCard (card, stack) {
+  canDragTableauCard = (card, stack) => {
     // can drag top card only
-    return stack[-1] === card.id;
+    const topCard = stack[stack.length - 1];
+    if(topCard !== undefined) {
+      return topCard.id === card.id;
+    }
   }
 
   handleMoveCard (dispatch, card, fromStackId, toStackId) {
-    dispatch(moveCard(card, fromStackId, toStackId));
+    dispatch(cardFunctions.moveCard(card, fromStackId, toStackId));
   }
 
   handleClickDeck () {
@@ -118,7 +126,7 @@ export class LaBelleLucie extends RuleSet {
             {
               foundations.map((f, i) => (
                 <Foundation key={ f.stackId }
-                  canMoveOnto={ this.canMoveOntoFoundation.bind(this) }
+                  canMoveOnto={ this.canMoveOntoFoundation }
                   canDragCard={ this.canDragFoundationCard.bind(this) }
                   handleMoveCard={ this.handleMoveCard.bind(this) }
                   { ...f.props }
@@ -131,7 +139,7 @@ export class LaBelleLucie extends RuleSet {
           {
             tableaus.map((t) => (
               <Tableau key={ t.stackId }
-                canMoveOnto={ this.canMoveOntoTableau.bind(this) }
+                canMoveOnto={ this.canMoveOntoTableau }
                 canDragCard={ this.canDragTableauCard.bind(this) }
                 handleMoveCard={ this.handleMoveCard.bind(this) }
                 { ...t.props }

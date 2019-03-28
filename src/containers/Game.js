@@ -3,6 +3,7 @@ import GameDisplay from 'components/GameDisplay';
 
 const mapStateToProps = state => {
   return {
+    gameInitialized: state.gameInitialized,
     unicodeMode: state.prefs.unicodeMode,
     ruleSet: state.ruleSet,
     tableaus: state.tableaus,

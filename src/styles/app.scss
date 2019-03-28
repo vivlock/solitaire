@@ -1,0 +1,22 @@
+body {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+}
+
+.tabs {
+  width: 100%;
+  background-color: lightblue;
+  margin: 0 0 20px 0;
+  display: flex;
+  justify-content: flex-start;
+  span {
+    margin: auto;
+    padding: 5px;
+    flex-grow: 1;
+    text-align: center;
+    cursor: pointer;
+    &.selected {
+      background-color: white;
+    }
+  }
+}

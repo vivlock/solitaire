@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import 'styles/gameboard.scss'
 
 import LaBelleLucie from 'ruleSets/LaBelleLucie';
@@ -11,11 +11,13 @@ class GameDisplay extends Component {
 
   constructor (props) {
     super(props);
-    this.ruleSet = new LaBelleLucie(props.dispatch);
+    this.ruleSet = new LaBelleLucie(props.gameInitialized, props.dispatch);
   }
 
-  startGame() {
-    this.ruleSet.startGame(this.props);
+  componentDidUpdate (prevProps) {
+    if (this.props.gameInitialized && !prevProps.gameInitialized) {
+      this.ruleSet.startGame(this.props);
+    }
   }
 
   render () {

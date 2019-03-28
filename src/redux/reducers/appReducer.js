@@ -1,14 +1,11 @@
-import { SET_USER_PREFS, FINISHED_INITIALIZING } from 'redux/actions/appActions';
-import { CREATE_DECK, CREATE_TABLEAU, CREATE_FOUNDATION,
-  SET_STACK_CARDS, UPDATE_STACKS, MOVE_CARD } from 'redux/actions/stackActions';
+import { SET_USER_PREFS, FINISHED_INITIALIZING, UPDATE_VIEW } from 'redux/actions/appActions';
+import { cardActions } from 'redux/actions/cardActions';
 import { Views } from 'helpers/constants';
 
 const initialState = {
   currentView: Views.GAME,
   prefs: { unicodeMode: true },
-  finishedInitializing: false,
-  gameStartSent: false,
-  gameStarted: false,
+  gameInitialized: false,
   stacksById: {},
   tableaus: [],
   foundations: [],
@@ -16,13 +13,17 @@ const initialState = {
 }
 
 export default function solitaireApp(state = initialState, action) {
-  console.log('reducer', state);
-
   switch (action.type) {
+    case UPDATE_VIEW: {
+      return Object.assign({}, state, {
+        currentView: action.view
+      })
+    }
+
     case FINISHED_INITIALIZING: {
       console.log('finished initializing');
       return Object.assign({}, state, {
-        finishedInitializing: true
+        gameInitialized: true
       });
     }
 
@@ -32,7 +33,7 @@ export default function solitaireApp(state = initialState, action) {
       });
     }
 
-    case CREATE_DECK: {
+    case cardActions.CREATE_DECK: {
       const newState = {
         ...state,
         stacksById: Object.assign({}, state.stacksById, {
@@ -40,11 +41,10 @@ export default function solitaireApp(state = initialState, action) {
         }),
         deck: { stackId: action.stackId, props: action.props }
       }
-      console.log('create_deck returns', newState);
       return newState;
     }
 
-    case CREATE_TABLEAU: {
+    case cardActions.CREATE_TABLEAU: {
       const tableaus = state.tableaus;
       const newTableau = {
         stackId: action.stackId,
@@ -57,11 +57,10 @@ export default function solitaireApp(state = initialState, action) {
         }),
         tableaus: tableaus.concat([newTableau])
       };
-      console.log('create_tableau returns', newState);
       return newState;
     }
 
-    case CREATE_FOUNDATION: {
+    case cardActions.CREATE_FOUNDATION: {
       const foundations = state.foundations;
       const newFoundation = {
         stackId: action.stackId,
@@ -74,11 +73,10 @@ export default function solitaireApp(state = initialState, action) {
         }),
         foundations: foundations.concat([newFoundation])
       };
-      console.log('create_foundation returns', newState);
       return newState;
     }
 
-    case SET_STACK_CARDS: {
+    case cardActions.SET_STACK_CARDS: {
       return {
         ...state,
         stacksById: Object.assign({}, state.stacksById, {
@@ -87,15 +85,14 @@ export default function solitaireApp(state = initialState, action) {
       };
     }
 
-    case UPDATE_STACKS: {
-      console.log('update_stacks');
+    case cardActions.UPDATE_STACKS: {
       return {
         ...state,
         stacksById: Object.assign({}, state.stacksById, action.stacksById)
       }
     }
 
-    case MOVE_CARD: {
+    case cardActions.MOVE_CARD: {
       const card = action.card;
       const from = state.stacksById[action.fromId];
       const to = state.stacksById[action.toId];

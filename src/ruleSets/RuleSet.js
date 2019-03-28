@@ -1,6 +1,6 @@
 import CardLogic from 'helpers/cardLogic';
-import { createDeck, createTableau, createFoundation, setStackCards } from 'redux/actions/stackActions';
-import { moveCard } from 'redux/actions/cardActions';
+import { cardFunctions } from 'redux/actions/cardActions';
+import { finishedInitializing } from 'redux/actions/appActions';
 
 // parent object with generic ruleset functions
 // all functions are required - children should override all game-specific functions
@@ -19,6 +19,7 @@ class RuleSet {
     this.createDeck(dispatch);
     this.createTableaus(dispatch);
     this.createFoundations(dispatch);
+    dispatch(finishedInitializing());
   }
 
   // generates a standard 52-card poker deck
@@ -39,31 +40,31 @@ class RuleSet {
   createTableaus (dispatch) {
     for (let i = 0; i < this.tableauCount; i++) {
       const id = 'tbl-' + i;
-      dispatch(createTableau(id, { id: id, ...this.tableauProps }));
+      dispatch(cardFunctions.createTableau(id, { id: id, ...this.tableauProps }));
     }
   }
 
   createFoundations (dispatch) {
     for (let i = 0; i < this.foundationCount; i++) {
       const id = 'fdtn-' + i;
-      dispatch(createFoundation(id, { id: id, ...this.foundationProps }));
+      dispatch(cardFunctions.createFoundation(id, { id: id, ...this.foundationProps }));
     }
   }
 
   createDeck (dispatch) {
     const id = "deck";
     const cards = this.generateCards();
-    dispatch(createDeck(id, { id: id, ...this.deckProps }, cards));
+    dispatch(cardFunctions.createDeck(id, { id: id, ...this.deckProps }, cards));
   }
 
   handleMoveCard (dispatch, card, fromId, toId) {
-    dispatch(moveCard(card, fromId, toId));
+    dispatch(cardFunctions.moveCard(card, fromId, toId));
   }
 
   handleShuffle (dispatch, stackId, cards) {
     if(cards !== undefined) {
       let shuffled = CardLogic.shuffle(cards);
-      dispatch(setStackCards(stackId, shuffled));
+      dispatch(cardFunctions.setStackCards(stackId, shuffled));
     }
   }
 }

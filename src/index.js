@@ -6,7 +6,10 @@ import solitaireApp from 'redux/reducers/appReducer'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-const store = createStore(solitaireApp)
+const store = createStore(
+   solitaireApp, undefined,
+   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  );
 
 render(
   <Provider store={store}>

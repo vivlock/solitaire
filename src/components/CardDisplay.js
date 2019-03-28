@@ -7,7 +7,7 @@ import CardLogic from 'helpers/cardLogic';
 import CardSymbols from 'helpers/cardSymbols';
 import 'styles/card.scss';
 
-function Card ({ isDragging, unicodeMode, ...props }) {
+function CardDisplay ({ isDragging, unicodeMode, ...props }) {
   if  (isDragging) {
     return null;
   }
@@ -85,9 +85,9 @@ function pips (rank, suitSymbol) {
 }
 
 const cardDragSpec = {
-  beginDrag({ id, rank, suit, removeFromPreviousStack }, monitor, component) {
+  beginDrag({ id, rank, suit, stackId }, monitor, component) {
     const card = {
-      id, rank, suit, removeFromPreviousStack,
+      id, rank, suit, stackId,
     };
     return card;
   },
@@ -103,4 +103,4 @@ function collect(connect, monitor) {
   }
 }
 
-export default DragSource(ItemTypes.CARD, cardDragSpec, collect)(Card);
+export default DragSource(ItemTypes.CARD, cardDragSpec, collect)(CardDisplay);

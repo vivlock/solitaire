@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Card from 'components/CardDisplay'
+import Card from 'containers/Card'
 import 'styles/stacks.scss'
 import { DropTarget } from 'react-dnd';
 import { ItemTypes } from 'helpers/constants'
@@ -30,9 +30,10 @@ class TableauDisplay extends Component {
       <div className={className}>
       {
         cards.map((card, index) => (
-          <Card key={ card.id } faceup={ true } canDrag={ this.canDragCard.bind(this) }
+          <Card key={ card.id } faceup={ true }
             style={{ [posType]: `${offset * index}px` }}
-            removeFromPreviousStack={ this.removeCard.bind(this) }
+            canDrag={ this.canDragCard.bind(this) }
+            stackId={ this.props.id }
             { ...card } />
         ))
       }
@@ -40,23 +41,19 @@ class TableauDisplay extends Component {
     );
   }
 
-  removeCard(cardId) {
-    this.props.removeCard(cardId, this.props.id);
-  }
-
   canDragCard(card) {
-    return this.props.canDragCard(card, this.props.id);
+    return this.props.canDragCard(card, this.props.cards);
   }
 }
 
 const tableauDropSpec = {
   drop(props, monitor, component) {
     const card = monitor.getItem();
-    card.removeFromPreviousStack(card.id);
-    props.handleMoveOnto(card, props.id);
+    props.handleMoveCard(props.dispatch, card, card.stackId, props.id);
+
   },
   canDrop(props, monitor) {
-    return props.canMoveOnto(monitor.getItem(), props.id);
+    return props.canMoveOnto(monitor.getItem(), props.cards);
   }
 }
 
