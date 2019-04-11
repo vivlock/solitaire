@@ -26,10 +26,11 @@ const CardLogic = {
   },
   // Durstenfeld shuffle
   shuffle: function (cards) {
-    const shuffledCards = [];
-    for (let i = cards.length - 1; i > 0; i--) {
+    // copy cards arrays, don't mutate state objects!!
+    const shuffledCards = cards.slice();
+    for (let i = shuffledCards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [shuffledCards[i], shuffledCards[j]] = [cards[j], cards[i]];
+      [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]];
     }
     return shuffledCards;
   }

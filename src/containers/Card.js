@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import CardDisplay from 'components/CardDisplay';
 
-const mapStateToProps = (state, ownProps) => ({
-  unicodeMode: state.prefs.unicodeMode
+const mapStateToProps = ({ app }) => ({
+  unicodeMode: app.prefs.unicodeMode
 })
 
 const Card = connect(

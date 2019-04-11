@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import FoundationDisplay from 'components/FoundationDisplay';
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = ({ game }, ownProps) => {
   return {
-    cards: state.stacksById[ownProps.id]
+    cards: game.stacksById[ownProps.id]
   }
 }
 

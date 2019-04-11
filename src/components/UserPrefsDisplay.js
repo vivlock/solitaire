@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class UserPrefsDisplay extends Component {
 
   render () {
-    return <div />;
+    return <div>User Prefs isn't implemented yet lol</div>;
   }
 }
 

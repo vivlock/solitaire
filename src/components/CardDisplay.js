@@ -18,13 +18,13 @@ function CardDisplay ({ isDragging, unicodeMode, ...props }) {
 }
 
 // use unicode card characters
-function renderUnicodeMode ({ rank, suit, faceup, style, connectDragSource }) {
+function renderUnicodeMode ({ rank, suit, faceup, style, connectDragSource, handleDoubleClick }) {
   const className = "card card-" + suit;
   const unicodeCard = CardSymbols.cards[rank + '-' + suit];
 
   if(faceup) {
     return connectDragSource(
-      <div className={ className } style={ style }>
+      <div className={ className } style={ style } onDoubleClick={ handleDoubleClick }>
         <div className='card-symbol'>
           { unicodeCard }
         </div>
@@ -41,12 +41,12 @@ function renderUnicodeMode ({ rank, suit, faceup, style, connectDragSource }) {
 }
 
 // TODO: finish standard mode
-function renderStandardMode ({ rank, suit, style, faceup, connectDragSource }) {
+function renderStandardMode ({ rank, suit, style, faceup, connectDragSource, handleDoubleClick }) {
   const className = "card card-" + suit;
   const suitSymbol = CardSymbols.colorSuits[suit];
   if(faceup) {
     return connectDragSource(
-      <div className={ className } style={ style }>
+      <div className={ className } style={ style } onDoubleClick={ handleDoubleClick }>
         <div className="card-inner">
           <div className="top-left">
             <div className="rank">{ rank }</div>

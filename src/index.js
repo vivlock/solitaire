@@ -2,17 +2,18 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import solitaireApp from 'redux/reducers/appReducer'
+import reducer from 'redux/reducers/index'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 const store = createStore(
-   solitaireApp, undefined,
-   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  );
+  reducer,
+  undefined,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 
 render(
-  <Provider store={store}>
+  <Provider store={ store }>
     <App />
   </Provider>,
   document.getElementById('root')

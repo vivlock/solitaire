@@ -34,11 +34,22 @@ class TableauDisplay extends Component {
             style={{ [posType]: `${offset * index}px` }}
             canDrag={ this.canDragCard.bind(this) }
             stackId={ this.props.id }
+            handleDoubleClick={ () => this.handleDoubleClick(card) }
             { ...card } />
         ))
       }
       </div>
     );
+  }
+
+  //TODO: this doesn't work yet dang
+  handleDoubleClick (card) {
+    console.log('double click card');
+    const { stacksById, foundations, dispatch } = this.props;
+    this.props.handleDoubleClickCard({
+      dispatch, card, foundations, stacksById,
+      fromStackId: this.props.id
+    });
   }
 
   canDragCard(card) {

@@ -1,15 +1,16 @@
 import { connect } from 'react-redux';
 import GameDisplay from 'components/GameDisplay';
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ app, game }) => {
   return {
-    gameInitialized: state.gameInitialized,
-    unicodeMode: state.prefs.unicodeMode,
-    ruleSet: state.ruleSet,
-    tableaus: state.tableaus,
-    foundations: state.foundations,
-    deck: state.deck,
-    stacksById: state.stacksById
+    gameInitialized: game.gameInitialized,
+    gameWon: game.gameWon,
+    unicodeMode: app.prefs.unicodeMode,
+    ruleSet: game.ruleSet,
+    tableaus: game.tableaus,
+    foundations: game.foundations,
+    deck: game.deck,
+    stacksById: game.stacksById
   }
 }
 

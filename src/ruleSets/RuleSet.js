@@ -10,7 +10,10 @@ class RuleSet {
     // some defaults
     this.tableauCount =  7;     // number of tableau piles
     this.foundationCount = 4;   // number of foundation piles
-    this.deckProps = {};        // props to be passed to deck
+    this.deckProps = {          // props to be passed to deck
+      redeals: 3,            // # of times we can redeal the deck -- -1 is unlimited redeals
+      stock: 3,              // # of cards to keep in the stock -- 0 is no stock mechanic
+    };
     this.tableauProps = {};     // props to be passed to each tableau
     this.foundationProps = {};  // props to be passed to each foundation
   }
@@ -54,7 +57,8 @@ class RuleSet {
   createDeck (dispatch) {
     const id = "deck";
     const cards = this.generateCards();
-    dispatch(cardFunctions.createDeck(id, { id: id, ...this.deckProps }, cards));
+    const shuffledCards = CardLogic.shuffle(cards);
+    dispatch(cardFunctions.createDeck(id, { id: id, ...this.deckProps }, shuffledCards));
   }
 
   handleMoveCard (dispatch, card, fromId, toId) {
@@ -63,7 +67,7 @@ class RuleSet {
 
   handleShuffle (dispatch, stackId, cards) {
     if(cards !== undefined) {
-      let shuffled = CardLogic.shuffle(cards);
+      const shuffled = CardLogic.shuffle(cards);
       dispatch(cardFunctions.setStackCards(stackId, shuffled));
     }
   }

@@ -4,7 +4,8 @@ export const cardActions = {
   CREATE_FOUNDATION: 'CREATE_FOUNDATION',
   SET_STACK_CARDS: 'SET_STACK_CARDS',
   UPDATE_STACKS: 'UPDATE_STACKS',
-  MOVE_CARD: 'MOVE_CARD'
+  MOVE_CARD: 'MOVE_CARD',
+  REDEAL: 'REDEAL'
 }
 
 export const cardFunctions = {
@@ -33,8 +34,13 @@ export const cardFunctions = {
     stacksById
   }),
 
-  moveCard: (card, fromId, toId) => ({
+  moveCard: (card, fromId, toId, checkWinCondition) => ({
     type: cardActions.MOVE_CARD,
-    card, fromId, toId
+    card, fromId, toId, checkWinCondition
+  }),
+
+  handleRedeal: (stacksById) => ({
+    type: cardActions.REDEAL,
+    stacksById
   })
 }

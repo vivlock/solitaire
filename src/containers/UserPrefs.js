@@ -3,7 +3,7 @@ import UserPrefsDisplay from 'components/UserPrefsDisplay';
 
 const mapStateToProps = state => {
   return {
-    prefs: state.prefs
+    prefs: state.app.prefs
   }
 }
 

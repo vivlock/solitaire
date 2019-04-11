@@ -5,7 +5,29 @@
   width: 95px;
   position: relative;
 }
+
 .deck {
+  cursor: pointer;
+  .icon:before {
+    font-size: 45px;
+    line-height:1;
+    text-align:center;
+    position: absolute;
+    overflow:hidden;
+    left: 0; top:20px; right:0; bottom:0;
+  }
+  .icon-redeal:before {
+    color: #0e93ca;
+    content: '⟳';
+  }
+  .icon-no-redeals:before{
+    color: #d60000;
+    content: '⤬';
+    font-weight:bold;
+  }
+}
+
+.deck-empty {
   border: 1px solid gray;
 }
 

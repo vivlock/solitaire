@@ -1,10 +1,15 @@
 import { connect } from 'react-redux';
 import TableauDisplay from 'components/TableauDisplay';
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = ({ app, game }, ownProps) => {
   return {
-    cards: state.stacksById[ownProps.id],
-    unicodeMode: state.prefs.unicodeMode
+    cards: game.stacksById[ownProps.id],
+    unicodeMode: app.prefs.unicodeMode,
+
+    // for double click handling
+    stacksById: game.stacksById,
+    tableaus: game.tableaus,
+    foundations: game.foundations
   }
 }
 

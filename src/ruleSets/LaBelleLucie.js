@@ -15,7 +15,7 @@ export default class LaBelleLucie extends RuleSet {
 
     this.tableauCount = 18;
     this.tableauProps = { display: 'horizontal' };
-    this.deckProps = { redeals: 2, stock: false, stockDraw: false };
+    this.deckProps = { redeals: 2, stock: 0 };
 
     // so we don't reinitialize the game state every time we switch tabs
     if(!initialized) {
@@ -23,37 +23,55 @@ export default class LaBelleLucie extends RuleSet {
     }
   }
 
+  newGame ({ dispatch }) {
+
+  }
+
   startGame (props) {
-    console.log('startGame', props);
-
-    const deckId = props.deck.stackId;
-    const deckCards = props.stacksById[deckId];
-    const dispatch = props.dispatch;
-
-    this.handleShuffle(dispatch, deckId, deckCards);
     this.deal(props);
+  }
+
+  dealCardsToTableaus (cards, tableaus) {
+    const tableauCount = tableaus.length;
+    let stacks = {}
+
+    for (let i = 0; i < tableauCount; i++) {
+      stacks[tableaus[i].stackId] = [];
+    }
+
+    const length = cards.length;
+    for (let i = 0; i < length; i++) {
+      stacks[tableaus[i % tableauCount].stackId].push(cards[i]);
+    }
+
+    return stacks;
   }
 
   deal (props) {
     const { tableaus, deck, stacksById, dispatch } = props;
     const cards = stacksById[deck.stackId];
-    const tableauCount = tableaus.length;
-
-    let stacks = { [deck.stackId]: [] };
-    for(let i = 0; i < tableauCount; i++ ) {
-      stacks[tableaus[i].stackId] = [];
-    }
-
-    const length = cards.length - 1;
-    for(let i = 0; i < length; i++) {
-      stacks[tableaus[i % tableauCount].stackId].push(cards[i]);
-    }
+    let stacks = this.dealCardsToTableaus(cards, tableaus);
+    stacks[deck.stackId] = [];
 
     dispatch(cardFunctions.updateStacks(stacks))
   }
 
+  handleDeckClick ({ id, dispatch, redeals, cards, tableaus, stacksById }) {
+    let deckCards = cards.slice();
+    if(redeals !== 0) {
+      // return all tableau cards to deck
+      for(let t of tableaus) {
+        deckCards = deckCards.concat(stacksById[t.stackId]);
+      }
+      deckCards = CardLogic.shuffle(deckCards);
+      const updatedStacks = this.dealCardsToTableaus(deckCards, tableaus);
+      //set deck stack to empty
+      updatedStacks[id] = [];
+      dispatch(cardFunctions.handleRedeal(updatedStacks));
+    }
+  }
+
   canMoveOntoTableau (card, stack) {
-    console.log('canMoveOntoTableau');
     const length = stack.length;
     // cannot move onto empty tableau
     if (length !== 0) {
@@ -69,7 +87,6 @@ export default class LaBelleLucie extends RuleSet {
   }
 
   canMoveOntoFoundation (card, stack) {
-    console.log('canMoveOntoFoundation', card, stack);
     const length = stack.length;
     // if foundation is empty, can move if card is A
     if (length === 0) {
@@ -102,15 +119,28 @@ export default class LaBelleLucie extends RuleSet {
     }
   }
 
-  handleMoveCard (dispatch, card, fromStackId, toStackId) {
-    dispatch(cardFunctions.moveCard(card, fromStackId, toStackId));
+  checkWinCondition = (state) => {
+    for (let f of state.foundations) {
+      if (state.stacksById[f.stackId].length !== 13) {
+        return false;
+      }
+    }
+    // if we got here, all 4 foundations have 13 cards. Winner!
+    return true;
   }
 
-  handleClickDeck () {
-    console.log('deck clicked');
-    // redeal -- collect cards from tableaus back into the deck
-    // deal as normal
-    // decrement # of redeals available
+  handleMoveCard (dispatch, card, fromStackId, toStackId) {
+    dispatch(cardFunctions.moveCard(card, fromStackId, toStackId, this.checkWinCondition));
+  }
+
+  handleDoubleClickCard ({ dispatch, card, fromStackId, foundations, stacksById }) {
+    for (let f of foundations) {
+      const stack = stacksById[f.stackId];
+      if (this.canMoveOntoFoundation(card, stack)) {
+        this.handleMoveCard(dispatch, card, fromStackId, f.stackId);
+        break;
+      }
+    }
   }
 
   render (props) {
@@ -118,7 +148,7 @@ export default class LaBelleLucie extends RuleSet {
     return (
       <div className={`gameboard ${unicodeMode ? 'unicode-mode' : ''}`}>
         <Deck {...deck.props}
-          handleClick={ this.handleClickDeck.bind(this) }
+          handleClick={ this.handleDeckClick.bind(this) }
           handleMoveCard={ this.handleMoveCard.bind(this) }
         />
         <div className='foundation-container'>
@@ -127,7 +157,7 @@ export default class LaBelleLucie extends RuleSet {
               foundations.map((f, i) => (
                 <Foundation key={ f.stackId }
                   canMoveOnto={ this.canMoveOntoFoundation }
-                  canDragCard={ this.canDragFoundationCard.bind(this) }
+                  canDragCard={ this.canDragFoundationCard }
                   handleMoveCard={ this.handleMoveCard.bind(this) }
                   { ...f.props }
                 />
@@ -140,8 +170,9 @@ export default class LaBelleLucie extends RuleSet {
             tableaus.map((t) => (
               <Tableau key={ t.stackId }
                 canMoveOnto={ this.canMoveOntoTableau }
-                canDragCard={ this.canDragTableauCard.bind(this) }
+                canDragCard={ this.canDragTableauCard }
                 handleMoveCard={ this.handleMoveCard.bind(this) }
+                handleDoubleClickCard={ this.handleDoubleClickCard.bind(this) }
                 { ...t.props }
               />
             ))

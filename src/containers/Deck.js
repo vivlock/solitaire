@@ -1,10 +1,12 @@
 import { connect } from 'react-redux';
 import DeckDisplay from 'components/DeckDisplay';
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = ({ game }, ownProps) => {
   return {
-    cards: state.stacksById[ownProps.id],
-    unicodeMode: state.prefs.unicodeMode
+    cards: game.stacksById[ownProps.id],
+    ...game.deck,
+    tableaus: game.tableaus,
+    stacksById: game.stacksById
   }
 }
 

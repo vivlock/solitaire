@@ -3,7 +3,7 @@ import TabsDisplay from 'components/TabsDisplay';
 
 const mapStateToProps = state => {
   return {
-    view: state.currentView
+    view: state.app.currentView
   }
 }
 

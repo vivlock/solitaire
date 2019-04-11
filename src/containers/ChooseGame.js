@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import ChooseGameDisplay from 'components/ChooseGameDisplay';
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ app }) => {
   return {
-    view: state.currentView
+    view: app.currentView
   }
 }
 

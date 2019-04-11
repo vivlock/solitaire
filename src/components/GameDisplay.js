@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import 'styles/gameboard.scss'
 
 import LaBelleLucie from 'ruleSets/LaBelleLucie';
@@ -11,7 +11,11 @@ class GameDisplay extends Component {
 
   constructor (props) {
     super(props);
-    this.ruleSet = new LaBelleLucie(props.gameInitialized, props.dispatch);
+    this.ruleSet = new LaBelleLucie(this.props.gameInitialized, this.props.dispatch);
+  }
+
+  newGame () {
+    this.ruleSet.newGame(this.props);
   }
 
   componentDidUpdate (prevProps) {
@@ -20,8 +24,20 @@ class GameDisplay extends Component {
     }
   }
 
+  renderWinOverlay (winCondition) {
+    if (winCondition) {
+      return (
+        <div className='overlay' onClick={ this.newGame.bind(this) }>YOU WIN</div>
+      )
+    }
+    return null;
+  }
+
   render () {
-    return this.ruleSet.render(this.props);
+    return [
+      this.renderWinOverlay(this.props.gameWon),
+      this.ruleSet.render(this.props)
+    ]
   }
 }
 
